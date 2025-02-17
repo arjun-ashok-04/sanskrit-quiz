@@ -15,11 +15,9 @@ const ErrorCallout = ({ errors } : {errors : string[]}) => {
     if(errors.length === 0) {
         return null;
     }
-    return <Callout.Root>
-        {errorsList}
-    </Callout.Root>
-
+    return <Callout.Root> {errorsList} </Callout.Root>
 }
+
 export default function Register() {
     const router = useRouter();
     const [name, setName] = useState("");

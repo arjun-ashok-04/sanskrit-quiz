@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import * as RadioGroup from "@radix-ui/react-radio-group";
@@ -10,9 +10,18 @@ const questions = [
     { id: 2, text: "What is the capital of France?", options: ["Berlin", "Paris", "Rome"], answer: "Paris" },
 ];
 
-export default function Quiz({ params }: { params: { id: string } }) {
+const getQuestionIndex = (id: string) => {
+    const questionIndex = parseInt(id) - 1;
+    if (questionIndex < 0 || questionIndex >= questions.length) {
+        return 0;
+    }
+    return questionIndex;
+}
+
+export default function Quiz() {
     const router = useRouter();
-    const questionIndex = parseInt(params.id) - 1;
+    const params = useParams()
+    const questionIndex = getQuestionIndex(params?.id?.toString() ?? "1");
     const question = questions[questionIndex];
 
     const [selected, setSelected] = useState("");
