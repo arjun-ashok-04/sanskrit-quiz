@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {useMemo, useState} from "react";
-import { Button, TextField, Card, Flex, Callout,  } from "@radix-ui/themes";
+import {useEffect, useMemo, useState} from "react";
+import { Button, TextField, Card, Flex, Callout, Theme,  } from "@radix-ui/themes";
 import {validateRegistration} from "@/common/validator";
+import {makeCall} from "@/common/apiCaller";
+import {hasAnExistingSession,startSession} from "@/common/storageHelper";
 
 const ErrorCallout = ({ errors } : {errors : string[]}) => {
     const errorsList = errors.map((error: string, index: number) => (
@@ -18,20 +20,39 @@ const ErrorCallout = ({ errors } : {errors : string[]}) => {
     return <Callout.Root> {errorsList} </Callout.Root>
 }
 
+const fetchQuestions = async () =>{
+    const res = await makeCall(`/api/question`,{}, {
+        method: "GET",
+        cache: "no-store",
+    });
+
+    if (res.status === 200) {
+        const response = await res.json();
+        return response["data"];
+    } else {
+        console.error("Failed to fetch data, status code:", res.status);
+    }
+}
+
 export default function Register() {
     const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [errors, setErrors] = useState<string[]>([]);
+    const [questions, setQuestions] = useState([]);
 
     const handleStart = () => {
         let validationErrors = validateRegistration(name, email);
         if(!validationErrors) {
-            const lEmail = localStorage.getItem("email");
-            if(!lEmail || lEmail !== email) {
-                localStorage.setItem("username", name);
-                localStorage.setItem("email", email);
-                router.push("/quiz/1");
+            const existingSession = hasAnExistingSession(email);
+            if(!existingSession) {
+                const session = startSession(name, email, questions);
+                if(session) {
+                    router.push("/quiz/1?email=" + email);
+                }else{
+                    validationErrors = []
+                    validationErrors.push("Failed to start session, contact Arjun!");
+                }
             }else{
                 validationErrors = []
                 validationErrors.push("You have already registered with this email");
@@ -40,11 +61,18 @@ export default function Register() {
         setErrors(validationErrors ?? []);
     };
 
+    useEffect(() => {
+        fetchQuestions().then((data) => {
+            setQuestions(data);
+        });
+    },[]);
+
     const errorsComp = useMemo(() => {
         return errors ? <ErrorCallout errors={errors} /> : null;
     }, [errors]);
 
     return (
+        <Theme accentColor="blue" grayColor="gray" panelBackground="solid" radius="full">
         <Flex justify="center" align="center" height="100vh">
             <Card className="w-96 p-6 shadow-lg">
                 {errorsComp}
@@ -70,5 +98,6 @@ export default function Register() {
                 </div>
             </Card>
         </Flex>
+        </Theme>
     );
 }

@@ -1,1 +1,5 @@
-export const BUILDER_PUBLIC_KEY = 'cf084340b5fe44f4a8c3b47ae7209b1c';
+export type Question = {
+    id: number;
+    text: string;
+    options: string[];
+}
