@@ -28,6 +28,7 @@ const submitSession = async (session: Session) =>{
 function SummaryContent() {
     const [total, setTotal] = useState(0);
     const [correct, setCorrect] = useState(0);
+    const [time, setTime] = useState(0);
     const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(true);
     const searchParams = useSearchParams()
@@ -45,9 +46,10 @@ function SummaryContent() {
 
         setUsername(session.username);
         submitSession(session).then((data) => {
-            const { total, score } = data;
+            const { total, score, time } = data;
             setTotal(total);
             setCorrect(score);
+            setTime(time);
             setLoading(false);
         })
 
@@ -80,12 +82,35 @@ function SummaryContent() {
 
 
     return (
-        <Flex justify="center" align="center" height="100vh" as="div" direction="column">
-            <Card className="w-96 p-6 shadow-lg">
+        <Flex justify="center" align="center" height="88vh">
+            <Card className="p-6 shadow-lg w-full max-w-2xl">
                 <Heading as="h2">अङ्क पर्यप्तं! (Quiz Completed!)</Heading>
-                <Text className="mt-2">{username} ({email}), भवतः अङ्क : {correct}/{total}.</Text>
-                <ScoreChart correct={correct} total={total}/>
-                <QuestionTimeChart data={chartData}/>
+                <hr className="my-4 border-gray-300"/>
+                <Text className="text-lg font-semibold">धन्यवादः (Thank you) {username} ({email}).</Text>
+
+                <table className="w-full border-collapse border border-gray-300 mt-4">
+                    <tbody>
+                    <tr className="bg-gray-100">
+                        <td className="border border-gray-300 px-4 py-2 font-medium">भवतः अङ्क (Your score)</td>
+                        <td className="border border-gray-300 px-4 py-2 text-right">{correct} / {total}</td>
+                    </tr>
+                    <tr>
+                        <td className="border border-gray-300 px-4 py-2 font-medium">कालः (Total time)</td>
+                        <td className="border border-gray-300 px-4 py-2 text-right">{Math.ceil(time * 1000) / 1000} seconds</td>
+                    </tr>
+                    <tr className="bg-gray-100">
+                        <td className="border border-gray-300 px-4 py-2 font-medium">सामान्यत कालः (Average time)</td>
+                        <td className="border border-gray-300 px-4 py-2 text-right">{Math.ceil((time / correct) * 1000) / 1000} seconds</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <hr className="my-4 border-gray-300"/>
+
+                <div className="flex space-x-4">
+                    <ScoreChart correct={correct} total={total}/>
+                    <QuestionTimeChart data={chartData}/>
+                </div>
                 <Button className="mt-4 w-full" onClick={() => {
                     window.location.href = "/";
                 }}>
@@ -99,7 +124,7 @@ function SummaryContent() {
 export default function QuizSummary() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <SummaryContent />
+            <SummaryContent/>
         </Suspense>
     );
 }

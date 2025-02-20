@@ -15,7 +15,7 @@ export default function QuestionTimeChart({data}: QuestionTimeChartProps) {
         return null;
     }
     return (
-            <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="50%" height={300}>
             <LineChart data={data}>
                 <XAxis dataKey="name" />
                 <YAxis

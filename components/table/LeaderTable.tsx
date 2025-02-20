@@ -35,7 +35,7 @@ export default function LeaderTable({data}: LeaderTableProps) {
                             </TableCell>
                             <TableCell align="right">{row.total}</TableCell>
                             <TableCell align="right">{row.score}</TableCell>
-                            <TableCell align="right">{row.time}</TableCell>
+                            <TableCell align="right">{Math.ceil(row.time * 1000) / 1000}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

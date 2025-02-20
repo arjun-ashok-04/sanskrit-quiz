@@ -31,7 +31,7 @@ const _POST = async (req: Request) => {
     }
 
     return NextResponse.json(
-        { success: true, data: { total, score} },
+        { success: true, data: { ...persistedSession } },
         status.OK,
     );
 };
