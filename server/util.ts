@@ -38,7 +38,7 @@ export const randomizeQuestions = () => {
 }
 
 export const totalQuestions = () => {
-    return defaultQuestions.length;
+    return getQuestions().length;
 }
 
 export const checkAnswers = (sessionAnswers: Answer[]) => {
