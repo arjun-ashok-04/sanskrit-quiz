@@ -3,3 +3,10 @@ export type Question = {
     text: string;
     options: string[];
 }
+
+export type LeaderboardEntry = {
+    name: string;
+    total: number;
+    score: number;
+    time: number;
+}

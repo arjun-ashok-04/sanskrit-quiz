@@ -6,6 +6,7 @@ import {Button, Card, Flex, Heading, Text, Theme} from "@radix-ui/themes";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import {saveAnswer, getSession} from "@/common/storageHelper";
 import {Question} from "@/common/constants";
+import {CountDown} from "@/components/countdown";
 
 type QuestionItemProps = {
     option: string;
@@ -37,14 +38,18 @@ export default function Quiz() {
     const searchParams = useSearchParams()
     const email = searchParams.get("email");
     const [selected, setSelected] = useState("");
-    const [questions, setQuestions] = useState([]);
+    const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<Question>();
     const randomizeOptions = useMemo( () => currentQuestion?.options?.sort(() => Math.random() - 0.5) ?? [], [currentQuestion]);
+    const [startTime, setStartTime] = useState<number>(Date.now());
 
     useEffect(() => {
+        setStartTime(Date.now());
+
         const session = getSession(email || "");
         if(!session) {
             router.push("/quiz");
+            return;
         }
 
         const sessionQs = session.questions
@@ -53,14 +58,14 @@ export default function Quiz() {
         const question: Question = sessionQs[questionIndex] as Question;
         if(question) {
             setCurrentQuestion(question);
-            const answer = session.answers ? session.answers[question.id] : "";
+            const answer = session.answers ? session.answers.find((a) => a.questionId === question.id)?.answer : "";
             setSelected(answer || "");
         }
     }, [email, params?.id, router]);
 
 
     const handleNext = () => {
-        if (!selected || !email) return;
+        if (!email) return;
 
         const session = getSession(email || "");
         if(!session || !currentQuestion?.id) {
@@ -69,7 +74,8 @@ export default function Quiz() {
         }
 
         const questionIndex = parseInt(params?.id?.toString() ?? "1") - 1
-        saveAnswer(email, currentQuestion.id, selected);
+        const elapsedTime = (Date.now() - startTime) / 1000; // Convert ms to seconds
+        saveAnswer(email, currentQuestion.id, selected ?? "-------", elapsedTime);
         if (questionIndex + 1 < questions.length) {
             router.push(`/quiz/${questionIndex + 2}?${searchParams}`);
         } else {
@@ -85,7 +91,7 @@ export default function Quiz() {
 
     return (
         <Theme accentColor="blue" grayColor="gray" panelBackground="solid" radius="full">
-        <Flex justify="center" align="center" height="100vh">
+            <Flex justify="center" align="center" height="88vh" as="div" direction="column">
             <Card className="w-96 p-6 shadow-lg">
                 <Heading as="h2">{currentQuestion.text}</Heading>
                 <RadioGroup.Root
@@ -101,7 +107,10 @@ export default function Quiz() {
                     Next
                 </Button>
             </Card>
+            <br/>
+            <CountDown duration={30} onComplete={handleNext}/>
         </Flex>
+
         </Theme>
     );
 }

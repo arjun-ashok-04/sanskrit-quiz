@@ -1,6 +1,8 @@
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import "../styles/globals.css";
+import { Header } from "@/components/content/header";
+import {Footer} from "@/components/content/footer";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       />
       <body>
       <Theme accentColor="blue">
+          <Header/>
       {children}
+          <Footer/>
       </Theme>
       </body>
       </html>

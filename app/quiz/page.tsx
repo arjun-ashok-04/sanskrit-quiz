@@ -51,11 +51,11 @@ export default function Register() {
                     router.push("/quiz/1?email=" + email);
                 }else{
                     validationErrors = []
-                    validationErrors.push("Failed to start session, contact Arjun!");
+                    validationErrors.push("आरम्भं असफलं !(Failed to start session, contact Arjun!)");
                 }
             }else{
                 validationErrors = []
-                validationErrors.push("You have already registered with this email");
+                validationErrors.push("भवान् पूर्वमेव अस्मिन् ईमेलद्वारा पञ्जीकरणं कृतवान्!");
             }
         }
         setErrors(validationErrors ?? []);
@@ -73,21 +73,21 @@ export default function Register() {
 
     return (
         <Theme accentColor="blue" grayColor="gray" panelBackground="solid" radius="full">
-        <Flex justify="center" align="center" height="100vh">
+        <Flex justify="center" align="center" height="88vh">
             <Card className="w-96 p-6 shadow-lg">
                 {errorsComp}
                 <div>
-                <h1 className="text-xl font-semibold mb-2">Name</h1>
+                <h1 className="text-xl font-semibold mb-2">नामः (Name)</h1>
                 <TextField.Root
-                    placeholder="Your name is required"
+                    placeholder="भवतः नाम आवश्यकम् (Your name is required)"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="mb-4"
                 />
-                <h1 className="text-xl font-semibold mb-2">Email</h1>
+                <h1 className="text-xl font-semibold mb-2">ईमेल (Email)</h1>
 
                 <TextField.Root
-                    placeholder="Your email is required"
+                    placeholder="भवतः ईमेल आवश्यकम् (Your email is required)"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="mb-4"
