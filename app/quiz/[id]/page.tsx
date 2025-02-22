@@ -42,6 +42,7 @@ export default function Quiz() {
     const [currentQuestion, setCurrentQuestion] = useState<Question>();
     const randomizeOptions = useMemo( () => currentQuestion?.options?.sort(() => Math.random() - 0.5) ?? [], [currentQuestion]);
     const [startTime, setStartTime] = useState<number>(Date.now());
+    const [previoulsyAnswered, setPreviouslyAnswered] = useState<boolean>(false);
 
     useEffect(() => {
         setStartTime(Date.now());
@@ -59,6 +60,9 @@ export default function Quiz() {
         if(question) {
             setCurrentQuestion(question);
             const answer = session.answers ? session.answers.find((a) => a.questionId === question.id)?.answer : "";
+            if(answer && answer.trim() !== "") {
+                setPreviouslyAnswered(true);
+            }
             setSelected(answer || "");
         }
     }, [email, params?.id, router]);
@@ -103,7 +107,7 @@ export default function Quiz() {
                         <QuestionItem option={option} key={`q-${index}`} />
                     )}
                 </RadioGroup.Root>
-                <Button className="mt-4 w-full" onClick={handleNext} disabled={!selected}>
+                <Button className="mt-4 w-full" onClick={handleNext} disabled={!selected || previoulsyAnswered}>
                     Next
                 </Button>
             </Card>

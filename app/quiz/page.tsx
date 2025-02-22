@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import { Button, TextField, Card, Flex, Callout, Theme,  } from "@radix-ui/themes";
 import {validateRegistration} from "@/common/validator";
 import {makeCall} from "@/common/apiCaller";
@@ -20,6 +20,19 @@ const ErrorCallout = ({ errors } : {errors : string[]}) => {
     return <Callout.Root> {errorsList} </Callout.Root>
 }
 
+const InfoCallout = ({ messages } : {messages : string[]}) => {
+    const messagesList = messages.map((error: string, index: number) => (
+        <Callout.Text key={index} color="gray">
+            {error}
+        </Callout.Text>
+    ));
+
+    if(messages.length === 0) {
+        return null;
+    }
+    return <Callout.Root> {messagesList} </Callout.Root>
+}
+
 const fetchQuestions = async () =>{
     const res = await makeCall(`/api/question`,{}, {
         method: "GET",
@@ -34,6 +47,13 @@ const fetchQuestions = async () =>{
     }
 }
 
+const messages = [
+    "You can only use one email once to register.",
+    "You email cannot use subaddressing (using +).",
+    "Each question has a 30-second time limit.",
+    "Do not go back to previous questions, as it may unset your answer and you will lose the score!",
+]
+
 export default function Register() {
     const router = useRouter();
     const [name, setName] = useState("");
@@ -41,8 +61,8 @@ export default function Register() {
     const [errors, setErrors] = useState<string[]>([]);
     const [questions, setQuestions] = useState([]);
 
-    const handleStart = () => {
-        let validationErrors = validateRegistration(name, email);
+    const handleStart = useCallback( async () => {
+        let validationErrors = await validateRegistration(name, email);
         if(!validationErrors) {
             const existingSession = hasAnExistingSession(email);
             if(!existingSession) {
@@ -59,7 +79,7 @@ export default function Register() {
             }
         }
         setErrors(validationErrors ?? []);
-    };
+    }, [email, name, questions, router]);
 
     useEffect(() => {
         fetchQuestions().then((data) => {
@@ -68,36 +88,40 @@ export default function Register() {
     },[]);
 
     const errorsComp = useMemo(() => {
-        return errors ? <ErrorCallout errors={errors} /> : null;
+        return errors ? <><br/><ErrorCallout errors={errors} /> </>: null;
     }, [errors]);
 
     return (
         <Theme accentColor="blue" grayColor="gray" panelBackground="solid" radius="full">
-        <Flex justify="center" align="center" height="88vh">
-            <Card className="w-96 p-6 shadow-lg">
-                {errorsComp}
-                <div>
-                <h1 className="text-xl font-semibold mb-2">नामः (Name)</h1>
-                <TextField.Root
-                    placeholder="भवतः नाम आवश्यकम् (Your name is required)"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mb-4"
-                />
-                <h1 className="text-xl font-semibold mb-2">ईमेल (Email)</h1>
+                <h1 className="text-2xl font-bold text-center mx-auto"> प्रश्नोत्तरे स्वागतम् ! (Welcome to the
+                    quiz!)</h1>
+            <Flex justify="center" align="center" height="88vh">
+                <Card className="w-196 shadow-lg">
+                    <InfoCallout messages={messages}/>
+                    {errorsComp}
+                    <br/>
+                    <div>
+                        <h1 className="text-xl font-semibold mb-2">नामः (Name)</h1>
+                        <TextField.Root
+                            placeholder="भवतः नाम आवश्यकम् (Your name is required)"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="mb-4"
+                        />
+                        <h1 className="text-xl font-semibold mb-2">ईमेल (Email)</h1>
 
-                <TextField.Root
-                    placeholder="भवतः ईमेल आवश्यकम् (Your email is required)"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="mb-4"
-                />
-                <Button className="mt-4 w-full" onClick={handleStart}>
-                    Start Quiz
-                </Button>
-                </div>
-            </Card>
-        </Flex>
+                        <TextField.Root
+                            placeholder="भवतः ईमेल आवश्यकम् (Your email is required)"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mb-4"
+                        />
+                        <Button className="mt-4 w-full" onClick={handleStart}>
+                            Start Quiz
+                        </Button>
+                    </div>
+                </Card>
+            </Flex>
         </Theme>
     );
 }

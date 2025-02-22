@@ -28,21 +28,21 @@ export default function Leader() {
     useEffect(() => {
         const intervalId = setInterval(() => {
             getLeaders().then((data) => {
-                setLeaders(data);
+                setLeaders(data ?? []);
             });
         }, 5000);
 
         return () => clearInterval(intervalId);
     }, []);
 
-    const leaderboardData: LeaderboardEntry[] = leaders.map((leader: PersistedSession) => {
+    const leaderboardData: LeaderboardEntry[] = leaders?.map((leader: PersistedSession) => {
         return {
             name: `${leader.username} (${leader.email})`,
             score: leader.score,
             time: leader.time,
             total: leader.total,
         }
-    });
+    }) ?? [];
     //sort leaderBoardData by score first desc and time second asc
     leaderboardData.sort((a, b) => {
         if (a.score === b.score) {
@@ -55,6 +55,7 @@ export default function Leader() {
         <Theme>
             <Flex height="88vh" as="div" direction="row">
                 <div className="w-full p-10">
+                    <br/>
                     <QuizScatterChart data={leaderboardData}/>
                 </div>
                 <div className="w-full p-10">
