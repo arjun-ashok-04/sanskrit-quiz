@@ -1,7 +1,7 @@
 "use client";
 
 import {Suspense, useEffect, useMemo, useState} from "react";
-import { Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
+import {Button, Card, Flex, Heading, Spinner, Text} from "@radix-ui/themes";
 import {makeCall} from "@/common/apiCaller";
 import {useRouter, useSearchParams} from "next/navigation";
 import * as React from "react";
@@ -74,7 +74,14 @@ function SummaryContent() {
         return (
             <Flex justify="center" align="center" height="100vh">
                 <Card className="p-6 shadow-lg">
-                    <Image src="/png/thinking.png" alt="loading" width="128" height="128"/>
+                    <Text className="text-lg font-semibold"> Checking your answers, please wait!</Text>
+                    <div className="items-center w-full pl-20">
+                        <div className="text-center pl-11">
+                            <Spinner className="p-4" size="lg"/>
+                        </div>
+                        <br/>
+                        <Image src="/png/thinking.png" alt="loading" width="128" height="128"/>
+                    </div>
                 </Card>
             </Flex>
         )

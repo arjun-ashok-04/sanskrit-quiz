@@ -75,7 +75,7 @@ export default function Register() {
                 }
             }else{
                 validationErrors = []
-                validationErrors.push("भवान् पूर्वमेव अस्मिन् ईमेलद्वारा पञ्जीकरणं कृतवान्!");
+                validationErrors.push("भवान् पूर्वमेव अस्मिन् ईमेलद्वारा पञ्जीकरणं कृतवान्! (This email is already used for this quiz!)");
             }
         }
         setErrors(validationErrors ?? []);
