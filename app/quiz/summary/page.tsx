@@ -77,7 +77,7 @@ function SummaryContent() {
                     <Text className="text-lg font-semibold"> Checking your answers, please wait!</Text>
                     <div className="items-center w-full pl-20">
                         <div className="text-center pl-11">
-                            <Spinner className="p-4" size="lg"/>
+                            <Spinner className="p-4"/>
                         </div>
                         <br/>
                         <Image src="/png/thinking.png" alt="loading" width="128" height="128"/>
